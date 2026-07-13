@@ -1,0 +1,912 @@
+{
+  "state": {
+    "emails": [
+      {
+        "id": 4,
+        "message_id": "msg-b8783074333e391d",
+        "from_addr": "j.rivera@municipality.example.gov",
+        "subject": "Possible upcoming project — early information",
+        "body": "Good morning, We may have an upcoming project for community facility repairs and would like to know if your firm would be interested. Details are still being finalized and a formal notice may follow. No solicitation number has been assigned yet.\n\nJ. Rivera",
+        "received_at": "2026-07-13T16:10:35Z",
+        "status": "exception",
+        "classification": "uncertain",
+        "confidence": 0.52,
+        "sol_number": null,
+        "opportunity_id": null,
+        "error": null,
+        "created_at": "2026-07-13T16:10:35Z",
+        "stages": [
+          {
+            "id": 22,
+            "email_id": 4,
+            "stage": "Email Intake",
+            "status": "ok",
+            "detail": "Email received and logged; passed the bid-keyword check; not a duplicate",
+            "created_at": "2026-07-13T16:10:35Z"
+          },
+          {
+            "id": 23,
+            "email_id": 4,
+            "stage": "Secure Intake",
+            "status": "ok",
+            "detail": "No attachments to check",
+            "created_at": "2026-07-13T16:10:35Z"
+          },
+          {
+            "id": 24,
+            "email_id": 4,
+            "stage": "Document Extraction",
+            "status": "ok",
+            "detail": "No document text to read",
+            "created_at": "2026-07-13T16:10:35Z"
+          },
+          {
+            "id": 25,
+            "email_id": 4,
+            "stage": "AI Classification",
+            "status": "ok",
+            "detail": "Classified as unclear — needs a person to look (52% confident)",
+            "created_at": "2026-07-13T16:10:35Z"
+          },
+          {
+            "id": 26,
+            "email_id": 4,
+            "stage": "Validation & Decision",
+            "status": "ok",
+            "detail": "Routed as unclear — needs a person to look. Needs attention: No submission deadline found in the email or documents; Deadline timezone not stated — worth double-checking",
+            "created_at": "2026-07-13T16:10:35Z"
+          }
+        ],
+        "attachments": []
+      },
+      {
+        "id": 3,
+        "message_id": "msg-f68b7d33599f1e6e",
+        "from_addr": "marketing@equipmentworld.example.com",
+        "subject": "Summer sale: 15% off excavator rentals this month",
+        "body": "Hi there! Don't miss our summer rental promotion — 15% off all mid-size excavators and skid steers through the end of the month. Reply to schedule a demo.\n\nEquipmentWorld Rentals",
+        "received_at": "2026-07-13T16:10:32Z",
+        "status": "archived",
+        "classification": "not_bid_related",
+        "confidence": 0.88,
+        "sol_number": null,
+        "opportunity_id": null,
+        "error": null,
+        "created_at": "2026-07-13T16:10:32Z",
+        "stages": [
+          {
+            "id": 17,
+            "email_id": 3,
+            "stage": "Email Intake",
+            "status": "ok",
+            "detail": "Email received and logged; passed the bid-keyword check; not a duplicate",
+            "created_at": "2026-07-13T16:10:32Z"
+          },
+          {
+            "id": 18,
+            "email_id": 3,
+            "stage": "Secure Intake",
+            "status": "ok",
+            "detail": "No attachments to check",
+            "created_at": "2026-07-13T16:10:32Z"
+          },
+          {
+            "id": 19,
+            "email_id": 3,
+            "stage": "Document Extraction",
+            "status": "ok",
+            "detail": "No document text to read",
+            "created_at": "2026-07-13T16:10:32Z"
+          },
+          {
+            "id": 20,
+            "email_id": 3,
+            "stage": "AI Classification",
+            "status": "ok",
+            "detail": "Classified as not bid-related (88% confident)",
+            "created_at": "2026-07-13T16:10:32Z"
+          },
+          {
+            "id": 21,
+            "email_id": 3,
+            "stage": "Validation & Decision",
+            "status": "ok",
+            "detail": "Routed as not bid-related",
+            "created_at": "2026-07-13T16:10:32Z"
+          }
+        ],
+        "attachments": []
+      },
+      {
+        "id": 2,
+        "message_id": "msg-a1cd18f5fde79bda",
+        "from_addr": "notifications@prdoh.pr.gov",
+        "subject": "Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+        "body": "Please be advised that Amendment No. 1 to solicitation PRDOH-2026-R-0142 has been issued. The proposal due date is extended to September 7, 2026 at 3:00 PM AST. See attached amendment and published Q&A.\n\nProcurement Office",
+        "received_at": "2026-07-13T16:10:30Z",
+        "status": "processed",
+        "classification": "existing_update",
+        "confidence": 0.9,
+        "sol_number": "PRDOH-2026-R-0142",
+        "opportunity_id": 1,
+        "error": null,
+        "created_at": "2026-07-13T16:10:30Z",
+        "stages": [
+          {
+            "id": 9,
+            "email_id": 2,
+            "stage": "Email Intake",
+            "status": "ok",
+            "detail": "Email received and logged; passed the bid-keyword check; not a duplicate",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 10,
+            "email_id": 2,
+            "stage": "Secure Intake",
+            "status": "ok",
+            "detail": "1 of 1 attachment(s) passed safety checks",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 11,
+            "email_id": 2,
+            "stage": "Document Extraction",
+            "status": "ok",
+            "detail": "Read 1 page(s) of text from the attached documents",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 12,
+            "email_id": 2,
+            "stage": "AI Classification",
+            "status": "ok",
+            "detail": "Classified as an update to a bid we already track (90% confident)",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 13,
+            "email_id": 2,
+            "stage": "Validation & Decision",
+            "status": "ok",
+            "detail": "Routed as an update to a bid we already track",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 14,
+            "email_id": 2,
+            "stage": "Update Opportunity",
+            "status": "ok",
+            "detail": "Matched to PRDOH-2026-R-0142; 2 detail(s) updated",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 15,
+            "email_id": 2,
+            "stage": "Document Indexing",
+            "status": "ok",
+            "detail": "Indexed 1 document excerpt(s) so the AI can search and cite them",
+            "created_at": "2026-07-13T16:10:30Z"
+          },
+          {
+            "id": 16,
+            "email_id": 2,
+            "stage": "AI Bid Analysis",
+            "status": "ok",
+            "detail": "AI suggests GO — sent to the team for review",
+            "created_at": "2026-07-13T16:10:30Z"
+          }
+        ],
+        "attachments": [
+          {
+            "id": 2,
+            "filename": "PRDOH-2026-R-0142_Amendment1.pdf",
+            "size": 1433,
+            "status": "stored",
+            "note": "checked and safe"
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "message_id": "msg-ffecc338e2d1f717",
+        "from_addr": "notifications@prdoh.pr.gov",
+        "subject": "RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4",
+        "body": "Good afternoon,\n\nThe Puerto Rico Department of Housing has released solicitation PRDOH-2026-R-0142 for the CDBG-DR Home Repair and Reconstruction Program, Region 4 (Mayaguez). Proposal due date: August 24, 2026 at 3:00 PM AST. The RFP document is attached.\n\nProcurement Office\nPuerto Rico Department of Housing",
+        "received_at": "2026-07-13T16:10:28Z",
+        "status": "processed",
+        "classification": "new_solicitation",
+        "confidence": 0.92,
+        "sol_number": "PRDOH-2026-R-0142",
+        "opportunity_id": 1,
+        "error": null,
+        "created_at": "2026-07-13T16:10:28Z",
+        "stages": [
+          {
+            "id": 1,
+            "email_id": 1,
+            "stage": "Email Intake",
+            "status": "ok",
+            "detail": "Email received and logged; passed the bid-keyword check; not a duplicate",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 2,
+            "email_id": 1,
+            "stage": "Secure Intake",
+            "status": "ok",
+            "detail": "1 of 1 attachment(s) passed safety checks",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 3,
+            "email_id": 1,
+            "stage": "Document Extraction",
+            "status": "ok",
+            "detail": "Read 1 page(s) of text from the attached documents",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 4,
+            "email_id": 1,
+            "stage": "AI Classification",
+            "status": "ok",
+            "detail": "Classified as a NEW bid (92% confident)",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 5,
+            "email_id": 1,
+            "stage": "Validation & Decision",
+            "status": "ok",
+            "detail": "Routed as a NEW bid. Needs attention: More than one possible deadline found (2026-08-10, 2026-08-24, 2026-09-15) — please confirm the real submission deadline",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 6,
+            "email_id": 1,
+            "stage": "Create Opportunity",
+            "status": "ok",
+            "detail": "Created PRDOH-2026-R-0142 with its file folder and calendar deadlines",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 7,
+            "email_id": 1,
+            "stage": "Document Indexing",
+            "status": "ok",
+            "detail": "Indexed 2 document excerpt(s) so the AI can search and cite them",
+            "created_at": "2026-07-13T16:10:28Z"
+          },
+          {
+            "id": 8,
+            "email_id": 1,
+            "stage": "AI Bid Analysis",
+            "status": "ok",
+            "detail": "AI suggests GO — sent to the team for review",
+            "created_at": "2026-07-13T16:10:28Z"
+          }
+        ],
+        "attachments": [
+          {
+            "id": 1,
+            "filename": "PRDOH-2026-R-0142_RFP.pdf",
+            "size": 2490,
+            "status": "stored",
+            "note": "checked and safe"
+          }
+        ]
+      }
+    ],
+    "opportunities": [
+      {
+        "id": 1,
+        "sol_number": "PRDOH-2026-R-0142",
+        "title": "Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+        "agency": null,
+        "due_date": "2026-09-07",
+        "due_tz": "AST",
+        "status": "go_approved",
+        "summary": "Bid-related email: RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4",
+        "confidence": 0.92,
+        "assigned_to": "RFP Team",
+        "created_at": "2026-07-13T16:10:28Z",
+        "updated_at": "2026-07-13T16:10:39Z",
+        "chunk_count": 3
+      }
+    ],
+    "reviews": [
+      {
+        "id": 2,
+        "opp_id": 1,
+        "analysis_id": 2,
+        "status": "open",
+        "decision": null,
+        "notes": null,
+        "created_at": "2026-07-13T16:10:30Z",
+        "completed_at": null,
+        "sol_number": "PRDOH-2026-R-0142",
+        "title": "Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+        "due_date": "2026-09-07",
+        "due_tz": "AST",
+        "analysis_status": "pending_review",
+        "analysis": {
+          "requirements": [
+            {
+              "text": "SECTION 2 - KEY DATES\nPre-bid conference (virtual): August 3, 2026 at 10:00 AM AST\nDeadline for written questions: August 10, 2026\nProposal due date: August 24, 2026 at 3:00 PM AST\nAnticipated award: September 15, 2026\nS",
+              "cite": 1
+            },
+            {
+              "text": "The Contractor shall provide a payment and performance bond equal to 100% of the contract value.",
+              "cite": 1
+            },
+            {
+              "text": "Offerors must demonstrate completion of at least five (5) CDBG-DR funded residential projects.",
+              "cite": 1
+            },
+            {
+              "text": "The Contractor is responsible for compliance with Davis-Bacon prevailing wage requirements.",
+              "cite": 1
+            },
+            {
+              "text": "All work shall comply with the PRDOH Footprint Excavation and Fill Scoping Estimating Guidelines.",
+              "cite": 1
+            },
+            {
+              "text": "The Contractor shall maintain commercial general liability insurance of not less than $2,000,000.",
+              "cite": 1
+            },
+            {
+              "text": "calendar day shall apply to late completion of each unit.",
+              "cite": 2
+            },
+            {
+              "text": "Offerors shall acknowledge receipt of this amendment in their proposal cover letter.",
+              "cite": 3
+            }
+          ],
+          "risks": [
+            {
+              "text": "Liquidated Damages: …al liability insurance of not less than $2,000,000.\nSECTION 4 - RISKS AND TERMS\nLiquidated damages of $500 per…",
+              "cite": 1
+            },
+            {
+              "text": "Retainage: …calendar day shall apply to late completion of each unit.\nRetainage of 10% will be withheld until final acceptance.\nThe Owner may terminate for convenience with fifteen (15) days written notice.\nSEC…",
+              "cite": 2
+            },
+            {
+              "text": "Bond: …August 10, 2026 are published as Attachment Q&A-1.\n3. Section 3 is revised: the bonding requirement may be satisfied with a bid bond of 5% at\n   submission, with payment and performance bonds due at award.\n4. All ",
+              "cite": 3
+            }
+          ],
+          "scope": "REQUEST FOR PROPOSALS\nSolicitation No. PRDOH-2026-R-0142\nPUERTO RICO DEPARTMENT OF HOUSING\nCDBG-DR Home Repair and Reconstruction Program - Region 4 (Mayaguez)\nSECTION 1 - SUMMARY\nThe Puerto Rico Department of Housing (PRDOH) invites qualified general contractors to submit\npropos…",
+          "findings": [
+            {
+              "text": "Proposal due 2026-09-07 (AST).",
+              "cite": 1
+            },
+            {
+              "text": "See cited excerpts for bonding, licensing, and evaluation criteria.",
+              "cite": 1
+            }
+          ],
+          "recommendation": "GO",
+          "rationale": "Automated first-pass assessment based on the requirements, risk terms, and deadlines found in the documents. A reviewer should confirm before the decision is final."
+        }
+      },
+      {
+        "id": 1,
+        "opp_id": 1,
+        "analysis_id": 1,
+        "status": "done",
+        "decision": "GO",
+        "notes": "Deadlines and bonding verified against Amendment 1. We hold the PR license and CDBG-DR past performance required.",
+        "created_at": "2026-07-13T16:10:28Z",
+        "completed_at": "2026-07-13T16:10:39Z",
+        "sol_number": "PRDOH-2026-R-0142",
+        "title": "Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+        "due_date": "2026-09-07",
+        "due_tz": "AST",
+        "analysis_status": "confirmed",
+        "analysis": {
+          "requirements": [
+            {
+              "text": "SECTION 2 - KEY DATES\nPre-bid conference (virtual): August 3, 2026 at 10:00 AM AST\nDeadline for written questions: August 10, 2026\nProposal due date: August 24, 2026 at 3:00 PM AST\nAnticipated award: September 15, 2026\nS",
+              "cite": 1
+            },
+            {
+              "text": "The Contractor shall provide a payment and performance bond equal to 100% of the contract value.",
+              "cite": 1
+            },
+            {
+              "text": "Offerors must demonstrate completion of at least five (5) CDBG-DR funded residential projects.",
+              "cite": 1
+            },
+            {
+              "text": "The Contractor is responsible for compliance with Davis-Bacon prevailing wage requirements.",
+              "cite": 1
+            },
+            {
+              "text": "All work shall comply with the PRDOH Footprint Excavation and Fill Scoping Estimating Guidelines.",
+              "cite": 1
+            },
+            {
+              "text": "The Contractor shall maintain commercial general liability insurance of not less than $2,000,000.",
+              "cite": 1
+            },
+            {
+              "text": "calendar day shall apply to late completion of each unit.",
+              "cite": 2
+            }
+          ],
+          "risks": [
+            {
+              "text": "Liquidated Damages: …al liability insurance of not less than $2,000,000.\nSECTION 4 - RISKS AND TERMS\nLiquidated damages of $500 per…",
+              "cite": 1
+            },
+            {
+              "text": "Retainage: …calendar day shall apply to late completion of each unit.\nRetainage of 10% will be withheld until final acceptance.\nThe Owner may terminate for convenience with fifteen (15) days written notice.\nSEC…",
+              "cite": 2
+            }
+          ],
+          "scope": "REQUEST FOR PROPOSALS\nSolicitation No. PRDOH-2026-R-0142\nPUERTO RICO DEPARTMENT OF HOUSING\nCDBG-DR Home Repair and Reconstruction Program - Region 4 (Mayaguez)\nSECTION 1 - SUMMARY\nThe Puerto Rico Department of Housing (PRDOH) invites qualified general contractors to submit\npropos…",
+          "findings": [
+            {
+              "text": "Proposal due 2026-08-24 (AST).",
+              "cite": 1
+            },
+            {
+              "text": "See cited excerpts for bonding, licensing, and evaluation criteria.",
+              "cite": 1
+            }
+          ],
+          "recommendation": "GO",
+          "rationale": "Automated first-pass assessment based on the requirements, risk terms, and deadlines found in the documents. A reviewer should confirm before the decision is final."
+        }
+      }
+    ],
+    "exceptions": [
+      {
+        "id": 2,
+        "email_id": 4,
+        "reason": "The system wasn't confident (52%) about \"Possible upcoming project — early information\" — please take a look",
+        "status": "open",
+        "created_at": "2026-07-13T16:10:35Z"
+      },
+      {
+        "id": 1,
+        "email_id": 1,
+        "reason": "More than one possible deadline found (2026-08-10, 2026-08-24, 2026-09-15) — please confirm the real submission deadline",
+        "status": "open",
+        "created_at": "2026-07-13T16:10:28Z"
+      }
+    ],
+    "notifications": [
+      {
+        "id": 7,
+        "type": "decision",
+        "message": "PRDOH-2026-R-0142: human decision GO",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:39Z"
+      },
+      {
+        "id": 6,
+        "type": "exception",
+        "message": "Exception assigned: The system wasn't confident (52%) about \"Possible upcoming project — early information\" — please take a look",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:35Z"
+      },
+      {
+        "id": 5,
+        "type": "review",
+        "message": "PRDOH-2026-R-0142 is ready for your review — AI suggests GO",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:30Z"
+      },
+      {
+        "id": 4,
+        "type": "update",
+        "message": "PRDOH-2026-R-0142 updated — due date changed from 2026-08-24 to 2026-09-07",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:30Z"
+      },
+      {
+        "id": 3,
+        "type": "review",
+        "message": "PRDOH-2026-R-0142 is ready for your review — AI suggests GO",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:28Z"
+      },
+      {
+        "id": 2,
+        "type": "exception",
+        "message": "Exception assigned: More than one possible deadline found (2026-08-10, 2026-08-24, 2026-09-15) — please confirm the real submission deadline",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:28Z"
+      },
+      {
+        "id": 1,
+        "type": "assignment",
+        "message": "New opportunity assigned: PRDOH-2026-R-0142 — RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4",
+        "read": 0,
+        "created_at": "2026-07-13T16:10:28Z"
+      }
+    ],
+    "audit": [
+      {
+        "id": 13,
+        "actor": "Reviewer",
+        "action": "review_completed",
+        "entity": "opp:1",
+        "detail": "GO; corrections=no",
+        "created_at": "2026-07-13T16:10:39Z"
+      },
+      {
+        "id": 12,
+        "actor": "WF1",
+        "action": "email_received",
+        "entity": "email:4",
+        "detail": "Possible upcoming project — early information",
+        "created_at": "2026-07-13T16:10:35Z"
+      },
+      {
+        "id": 11,
+        "actor": "WF1",
+        "action": "archived_non_bid",
+        "entity": "email:3",
+        "detail": "Non-bid email: Summer sale: 15% off excavator rentals this month",
+        "created_at": "2026-07-13T16:10:32Z"
+      },
+      {
+        "id": 10,
+        "actor": "WF1",
+        "action": "email_received",
+        "entity": "email:3",
+        "detail": "Summer sale: 15% off excavator rentals this month",
+        "created_at": "2026-07-13T16:10:32Z"
+      },
+      {
+        "id": 9,
+        "actor": "WF9",
+        "action": "analysis_written",
+        "entity": "opp:1",
+        "detail": "recommendation=GO",
+        "created_at": "2026-07-13T16:10:30Z"
+      },
+      {
+        "id": 8,
+        "actor": "WF8",
+        "action": "indexed",
+        "entity": "opp:1",
+        "detail": "1 excerpts",
+        "created_at": "2026-07-13T16:10:30Z"
+      },
+      {
+        "id": 7,
+        "actor": "WF3",
+        "action": "opportunity_updated",
+        "entity": "opp:1",
+        "detail": "due date changed from 2026-08-24 to 2026-09-07; title changed from RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4 to Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+        "created_at": "2026-07-13T16:10:30Z"
+      },
+      {
+        "id": 6,
+        "actor": "WF1",
+        "action": "email_received",
+        "entity": "email:2",
+        "detail": "Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+        "created_at": "2026-07-13T16:10:30Z"
+      },
+      {
+        "id": 5,
+        "actor": "WF9",
+        "action": "analysis_written",
+        "entity": "opp:1",
+        "detail": "recommendation=GO",
+        "created_at": "2026-07-13T16:10:28Z"
+      },
+      {
+        "id": 4,
+        "actor": "WF8",
+        "action": "indexed",
+        "entity": "opp:1",
+        "detail": "2 excerpts",
+        "created_at": "2026-07-13T16:10:28Z"
+      },
+      {
+        "id": 3,
+        "actor": "WF2",
+        "action": "opportunity_created",
+        "entity": "opp:1",
+        "detail": "PRDOH-2026-R-0142",
+        "created_at": "2026-07-13T16:10:28Z"
+      },
+      {
+        "id": 2,
+        "actor": "WF1",
+        "action": "email_received",
+        "entity": "email:1",
+        "detail": "RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4",
+        "created_at": "2026-07-13T16:10:28Z"
+      },
+      {
+        "id": 1,
+        "actor": "system",
+        "action": "server_started",
+        "entity": "server",
+        "detail": "AI mode: mock",
+        "created_at": "2026-07-13T16:09:41Z"
+      }
+    ],
+    "ops": {
+      "ai_mode": "mock",
+      "ai_model": "heuristic mock (set GEMINI_API_KEY)",
+      "ai_last_error": "",
+      "server_started": "2026-07-13T16:09:41Z",
+      "flows_active": true,
+      "emails_24h": 4,
+      "executions_24h": 26,
+      "errors_24h": 0,
+      "open_exceptions": 2,
+      "open_reviews": 1
+    },
+    "scenarios": {
+      "new_bid": "New solicitation (RFP w/ PDF)",
+      "amendment": "Amendment (existing update)",
+      "not_bid": "Non-bid email (archived)",
+      "uncertain": "Ambiguous (low confidence)"
+    }
+  },
+  "opp_details": {
+    "1": {
+      "id": 1,
+      "sol_number": "PRDOH-2026-R-0142",
+      "title": "Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+      "agency": null,
+      "due_date": "2026-09-07",
+      "due_tz": "AST",
+      "status": "go_approved",
+      "summary": "Bid-related email: RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4",
+      "confidence": 0.92,
+      "assigned_to": "RFP Team",
+      "created_at": "2026-07-13T16:10:28Z",
+      "updated_at": "2026-07-13T16:10:39Z",
+      "events": [
+        {
+          "id": 1,
+          "opp_id": 1,
+          "type": "created",
+          "detail": "Opportunity created from email: RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4",
+          "created_at": "2026-07-13T16:10:28Z"
+        },
+        {
+          "id": 2,
+          "opp_id": 1,
+          "type": "calendar",
+          "detail": "Submission deadline: 2026-08-24",
+          "created_at": "2026-07-13T16:10:28Z"
+        },
+        {
+          "id": 3,
+          "opp_id": 1,
+          "type": "calendar",
+          "detail": "Pre-bid conference: 2026-08-03",
+          "created_at": "2026-07-13T16:10:28Z"
+        },
+        {
+          "id": 4,
+          "opp_id": 1,
+          "type": "calendar",
+          "detail": "Submission deadline: 2026-08-10",
+          "created_at": "2026-07-13T16:10:28Z"
+        },
+        {
+          "id": 5,
+          "opp_id": 1,
+          "type": "calendar",
+          "detail": "Submission deadline: 2026-09-15",
+          "created_at": "2026-07-13T16:10:28Z"
+        },
+        {
+          "id": 6,
+          "opp_id": 1,
+          "type": "update",
+          "detail": "Update received: Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension) — due date changed from 2026-08-24 to 2026-09-07; title changed from RFP PRDOH-2026-R-0142 — CDBG-DR Home Repair & Reconstruction, Region 4 to Amendment No. 1 — RFP PRDOH-2026-R-0142 (due date extension)",
+          "created_at": "2026-07-13T16:10:30Z"
+        },
+        {
+          "id": 7,
+          "opp_id": 1,
+          "type": "calendar",
+          "detail": "Calendar updated: proposal now due 2026-09-07",
+          "created_at": "2026-07-13T16:10:30Z"
+        },
+        {
+          "id": 8,
+          "opp_id": 1,
+          "type": "decision",
+          "detail": "Human decision: GO — Deadlines and bonding verified against Amendment 1. We hold the PR license and CDBG-DR past performance required.",
+          "created_at": "2026-07-13T16:10:39Z"
+        }
+      ],
+      "chunks": [
+        {
+          "id": 1,
+          "source": "PRDOH-2026-R-0142_RFP.pdf",
+          "seq": 1,
+          "page": 1,
+          "preview": "REQUEST FOR PROPOSALS\nSolicitation No. PRDOH-2026-R-0142\nPUERTO RICO DEPARTMENT OF HOUSING\nCDBG-DR Home Repair and Reconstruction Program - Region 4 (Mayaguez)\nSECTION 1 - SUMMARY\nThe Puerto Rico Depa"
+        },
+        {
+          "id": 2,
+          "source": "PRDOH-2026-R-0142_RFP.pdf",
+          "seq": 2,
+          "page": 1,
+          "preview": "calendar day shall apply to late completion of each unit.\nRetainage of 10% will be withheld until final acceptance.\nThe Owner may terminate for convenience with fifteen (15) days written notice.\nSECTI"
+        },
+        {
+          "id": 3,
+          "source": "PRDOH-2026-R-0142_Amendment1.pdf",
+          "seq": 3,
+          "page": 1,
+          "preview": "AMENDMENT NO. 1\nSolicitation No. PRDOH-2026-R-0142\nCDBG-DR Home Repair and Reconstruction Program - Region 4\nThis amendment revises the solicitation as follows:\n1. The proposal due date is EXTENDED. R"
+        }
+      ],
+      "analyses": [
+        {
+          "id": 2,
+          "opp_id": 1,
+          "payload": {
+            "requirements": [
+              {
+                "text": "SECTION 2 - KEY DATES\nPre-bid conference (virtual): August 3, 2026 at 10:00 AM AST\nDeadline for written questions: August 10, 2026\nProposal due date: August 24, 2026 at 3:00 PM AST\nAnticipated award: September 15, 2026\nS",
+                "cite": 1
+              },
+              {
+                "text": "The Contractor shall provide a payment and performance bond equal to 100% of the contract value.",
+                "cite": 1
+              },
+              {
+                "text": "Offerors must demonstrate completion of at least five (5) CDBG-DR funded residential projects.",
+                "cite": 1
+              },
+              {
+                "text": "The Contractor is responsible for compliance with Davis-Bacon prevailing wage requirements.",
+                "cite": 1
+              },
+              {
+                "text": "All work shall comply with the PRDOH Footprint Excavation and Fill Scoping Estimating Guidelines.",
+                "cite": 1
+              },
+              {
+                "text": "The Contractor shall maintain commercial general liability insurance of not less than $2,000,000.",
+                "cite": 1
+              },
+              {
+                "text": "calendar day shall apply to late completion of each unit.",
+                "cite": 2
+              },
+              {
+                "text": "Offerors shall acknowledge receipt of this amendment in their proposal cover letter.",
+                "cite": 3
+              }
+            ],
+            "risks": [
+              {
+                "text": "Liquidated Damages: …al liability insurance of not less than $2,000,000.\nSECTION 4 - RISKS AND TERMS\nLiquidated damages of $500 per…",
+                "cite": 1
+              },
+              {
+                "text": "Retainage: …calendar day shall apply to late completion of each unit.\nRetainage of 10% will be withheld until final acceptance.\nThe Owner may terminate for convenience with fifteen (15) days written notice.\nSEC…",
+                "cite": 2
+              },
+              {
+                "text": "Bond: …August 10, 2026 are published as Attachment Q&A-1.\n3. Section 3 is revised: the bonding requirement may be satisfied with a bid bond of 5% at\n   submission, with payment and performance bonds due at award.\n4. All ",
+                "cite": 3
+              }
+            ],
+            "scope": "REQUEST FOR PROPOSALS\nSolicitation No. PRDOH-2026-R-0142\nPUERTO RICO DEPARTMENT OF HOUSING\nCDBG-DR Home Repair and Reconstruction Program - Region 4 (Mayaguez)\nSECTION 1 - SUMMARY\nThe Puerto Rico Department of Housing (PRDOH) invites qualified general contractors to submit\npropos…",
+            "findings": [
+              {
+                "text": "Proposal due 2026-09-07 (AST).",
+                "cite": 1
+              },
+              {
+                "text": "See cited excerpts for bonding, licensing, and evaluation criteria.",
+                "cite": 1
+              }
+            ],
+            "recommendation": "GO",
+            "rationale": "Automated first-pass assessment based on the requirements, risk terms, and deadlines found in the documents. A reviewer should confirm before the decision is final."
+          },
+          "status": "pending_review",
+          "created_at": "2026-07-13T16:10:30Z"
+        },
+        {
+          "id": 1,
+          "opp_id": 1,
+          "payload": {
+            "requirements": [
+              {
+                "text": "SECTION 2 - KEY DATES\nPre-bid conference (virtual): August 3, 2026 at 10:00 AM AST\nDeadline for written questions: August 10, 2026\nProposal due date: August 24, 2026 at 3:00 PM AST\nAnticipated award: September 15, 2026\nS",
+                "cite": 1
+              },
+              {
+                "text": "The Contractor shall provide a payment and performance bond equal to 100% of the contract value.",
+                "cite": 1
+              },
+              {
+                "text": "Offerors must demonstrate completion of at least five (5) CDBG-DR funded residential projects.",
+                "cite": 1
+              },
+              {
+                "text": "The Contractor is responsible for compliance with Davis-Bacon prevailing wage requirements.",
+                "cite": 1
+              },
+              {
+                "text": "All work shall comply with the PRDOH Footprint Excavation and Fill Scoping Estimating Guidelines.",
+                "cite": 1
+              },
+              {
+                "text": "The Contractor shall maintain commercial general liability insurance of not less than $2,000,000.",
+                "cite": 1
+              },
+              {
+                "text": "calendar day shall apply to late completion of each unit.",
+                "cite": 2
+              }
+            ],
+            "risks": [
+              {
+                "text": "Liquidated Damages: …al liability insurance of not less than $2,000,000.\nSECTION 4 - RISKS AND TERMS\nLiquidated damages of $500 per…",
+                "cite": 1
+              },
+              {
+                "text": "Retainage: …calendar day shall apply to late completion of each unit.\nRetainage of 10% will be withheld until final acceptance.\nThe Owner may terminate for convenience with fifteen (15) days written notice.\nSEC…",
+                "cite": 2
+              }
+            ],
+            "scope": "REQUEST FOR PROPOSALS\nSolicitation No. PRDOH-2026-R-0142\nPUERTO RICO DEPARTMENT OF HOUSING\nCDBG-DR Home Repair and Reconstruction Program - Region 4 (Mayaguez)\nSECTION 1 - SUMMARY\nThe Puerto Rico Department of Housing (PRDOH) invites qualified general contractors to submit\npropos…",
+            "findings": [
+              {
+                "text": "Proposal due 2026-08-24 (AST).",
+                "cite": 1
+              },
+              {
+                "text": "See cited excerpts for bonding, licensing, and evaluation criteria.",
+                "cite": 1
+              }
+            ],
+            "recommendation": "GO",
+            "rationale": "Automated first-pass assessment based on the requirements, risk terms, and deadlines found in the documents. A reviewer should confirm before the decision is final."
+          },
+          "status": "confirmed",
+          "created_at": "2026-07-13T16:10:28Z"
+        }
+      ]
+    }
+  },
+  "chunks": [
+    {
+      "opp_id": 1,
+      "seq": 1,
+      "source": "PRDOH-2026-R-0142_RFP.pdf",
+      "page": 1,
+      "text": "REQUEST FOR PROPOSALS\nSolicitation No. PRDOH-2026-R-0142\nPUERTO RICO DEPARTMENT OF HOUSING\nCDBG-DR Home Repair and Reconstruction Program - Region 4 (Mayaguez)\nSECTION 1 - SUMMARY\nThe Puerto Rico Department of Housing (PRDOH) invites qualified general contractors to submit\nproposals for residential repair and full reconstruction services across Region 4. Work includes\ndemolition, foundations, concrete and wood-frame reconstruction, roofing, electrical, plumbing,\nand final inspections in accordance with program guidelines.\nSECTION 2 - KEY DATES\nPre-bid conference (virtual): August 3, 2026 at 10:00 AM AST\nDeadline for written questions: August 10, 2026\nProposal due date: August 24, 2026 at 3:00 PM AST\nAnticipated award: September 15, 2026\nSECTION 3 - REQUIREMENTS\nThe Contractor shall hold an active PR General Contractor license and DACO registration.\nThe Contractor shall provide a payment and performance bond equal to 100% of the contract value.\nOfferors must demonstrate completion of at least five (5) CDBG-DR funded residential projects.\nThe Contractor is responsible for compliance with Davis-Bacon prevailing wage requirements.\nAll work shall comply with the PRDOH Footprint Excavation and Fill Scoping Estimating Guidelines.\nThe Contractor shall maintain commercial general liability insurance of not less than $2,000,000.\nSECTION 4 - RISKS AND TERMS\nLiquidated damages of $500 per"
+    },
+    {
+      "opp_id": 1,
+      "seq": 2,
+      "source": "PRDOH-2026-R-0142_RFP.pdf",
+      "page": 1,
+      "text": "calendar day shall apply to late completion of each unit.\nRetainage of 10% will be withheld until final acceptance.\nThe Owner may terminate for convenience with fifteen (15) days written notice.\nSECTION 5 - EVALUATION\nProposals will be evaluated on price (40%), past performance (30%), technical approach (20%),\nand small/local business participation (10%).\nSECTION 6 - SCOPE OF WORK\nThe scope includes approximately 180 housing units: 120 repair scopes averaging $45,000 and\n60 full reconstructions averaging $185,000, including engineered fill, cut and fill balancing,\nutility reconnection, and ADA accessibility upgrades where applicable."
+    },
+    {
+      "opp_id": 1,
+      "seq": 3,
+      "source": "PRDOH-2026-R-0142_Amendment1.pdf",
+      "page": 1,
+      "text": "AMENDMENT NO. 1\nSolicitation No. PRDOH-2026-R-0142\nCDBG-DR Home Repair and Reconstruction Program - Region 4\nThis amendment revises the solicitation as follows:\n1. The proposal due date is EXTENDED. Revised proposal due date: September 7, 2026 at 3:00 PM AST.\n2. Answers to written questions received by August 10, 2026 are published as Attachment Q&A-1.\n3. Section 3 is revised: the bonding requirement may be satisfied with a bid bond of 5% at\n   submission, with payment and performance bonds due at award.\n4. All other terms and conditions remain unchanged.\nOfferors shall acknowledge receipt of this amendment in their proposal cover letter."
+    }
+  ]
+}
