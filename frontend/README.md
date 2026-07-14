@@ -1,16 +1,28 @@
-# React + Vite
+# Byrdson Bid Intake — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite UI wired to the FastAPI backend.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Start the backend (and DBs) first — see `../backend/README.md`.
+2. From `frontend/`:
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Vite proxies `/api` → `http://localhost:8000`. Open http://localhost:5173.
 
-## Expanding the ESLint configuration
+Optional: set `VITE_API_URL=http://localhost:8000` in `.env` to call the backend directly (CORS must allow the origin).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Docker
+
+Requires the shared network and running backend stack:
+
+```bash
+cd ../backend && docker compose up -d --build   # creates bid-intake-net
+cd ../frontend && docker compose up -d --build  # joins bid-intake-net
+```
+
+Frontend: http://localhost:5173 (nginx proxies `/api` to `backend:8000`).

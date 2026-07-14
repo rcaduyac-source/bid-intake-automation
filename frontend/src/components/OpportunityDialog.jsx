@@ -2,45 +2,27 @@ import { useEffect, useRef, useState } from 'react';
 import { OPP_STATUS, EVT_STYLE } from '../constants';
 import { daysTo, tShort } from '../utils';
 
-function runAsk(chunks, oppId, question) {
-  const rows = (chunks || []).filter((c) => c.opp_id === oppId);
-  const words = question.toLowerCase().match(/[a-z0-9]{3,}/g) || [];
-  const scored = rows
-    .map((c) => {
-      const t = c.text.toLowerCase();
-      let s = 0;
-      words.forEach((w) => {
-        if (t.includes(w)) s++;
-      });
-      return [s, c];
-    })
-    .sort((a, b) => b[0] - a[0])
-    .slice(0, 3)
-    .filter((x) => x[0] > 0);
-
-  const answer = scored.length
-    ? 'Here are the document passages most related to your question:\n\n' +
-      scored
-        .map(([, c]) => '[' + c.seq + '] (' + c.source + ', page ' + c.page + ') ' + c.text.slice(0, 300) + '…')
-        .join('\n\n')
-    : 'No passage in the demo documents matches that question. (In the live system the AI answers from the full indexed documents.)';
-
-  return { answer, sources: scored.map(([s, c]) => ({ seq: c.seq, source: c.source, page: c.page, score: s })) };
-}
-
-// Body is keyed by opp.id in the parent so ask state resets when a new opp opens.
-function OppBody({ opp, chunks, onApprove }) {
+function OppBody({ opp, onApprove, onAsk }) {
   const [question, setQuestion] = useState('');
   const [result, setResult] = useState(null);
+  const [asking, setAsking] = useState(false);
 
   const st = OPP_STATUS[opp.status] || { cls: 'gray', text: opp.status };
   const an = opp.analyses && opp.analyses[0] ? opp.analyses[0] : null;
   const d = daysTo(opp.due_date);
 
-  const ask = () => {
+  const ask = async () => {
     const q = question.trim();
-    if (!q) return;
-    setResult(runAsk(chunks, opp.id, q));
+    if (!q || !onAsk) return;
+    setAsking(true);
+    try {
+      const res = await onAsk(opp.id, q);
+      setResult(res);
+    } catch (err) {
+      setResult({ answer: `Ask failed: ${err.message}`, sources: [] });
+    } finally {
+      setAsking(false);
+    }
   };
 
   return (
@@ -85,12 +67,14 @@ function OppBody({ opp, chunks, onApprove }) {
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && ask()}
         />
-        <button className="btn primary" onClick={ask}>Ask</button>
+        <button className="btn primary" onClick={ask} disabled={asking}>
+          {asking ? '…' : 'Ask'}
+        </button>
       </div>
       {result && (
         <>
           <div className="answer">{result.answer}</div>
-          {result.sources.length > 0 && (
+          {result.sources?.length > 0 && (
             <div style={{ marginTop: 6 }}>
               {result.sources.map((s, i) => (
                 <span key={i} className="cite">
@@ -104,7 +88,7 @@ function OppBody({ opp, chunks, onApprove }) {
 
       <div style={{ marginTop: 16 }}>
         <label>Timeline & calendar events</label>
-        {opp.events.length ? (
+        {(opp.events || []).length ? (
           opp.events.map((e) => {
             const s = EVT_STYLE[e.type] || ['gray', '•'];
             return (
@@ -123,8 +107,8 @@ function OppBody({ opp, chunks, onApprove }) {
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <label>Indexed document excerpts ({opp.chunks.length}) — these are the AI's citations</label>
-        {opp.chunks.length ? (
+        <label>Indexed document excerpts ({(opp.chunks || []).length}) — these are the AI's citations</label>
+        {(opp.chunks || []).length ? (
           opp.chunks.slice(0, 12).map((c) => (
             <div key={c.id} className="evt">
               <span className="etag" style={{ background: 'var(--blue-bg)', color: 'var(--blue)' }}>
@@ -145,10 +129,9 @@ function OppBody({ opp, chunks, onApprove }) {
   );
 }
 
-export default function OpportunityDialog({ opp, chunks, onClose, onApprove }) {
+export default function OpportunityDialog({ opp, onClose, onApprove, onAsk }) {
   const ref = useRef(null);
 
-  // Effect only syncs the native <dialog> element with React state — no setState here.
   useEffect(() => {
     const dlg = ref.current;
     if (!dlg) return;
@@ -159,11 +142,11 @@ export default function OpportunityDialog({ opp, chunks, onClose, onApprove }) {
   return (
     <dialog ref={ref} onClose={onClose}>
       <div className="dlg-head">
-        <h2>{opp ? `${opp.sol_number} — ${opp.title || ''}` : 'Opportunity'}</h2>
+        <h2>{opp ? `${opp.sol_number || ''} — ${opp.title || ''}` : 'Opportunity'}</h2>
         <button className="x" onClick={onClose}>✕</button>
       </div>
       <div className="dlg-body">
-        {opp && <OppBody key={opp.id} opp={opp} chunks={chunks} onApprove={onApprove} />}
+        {opp && <OppBody key={opp.id} opp={opp} onApprove={onApprove} onAsk={onAsk} />}
       </div>
     </dialog>
   );

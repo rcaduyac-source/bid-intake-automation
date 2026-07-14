@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function IntakeDialog({ open, onClose, onSubmit }) {
   const ref = useRef(null);
+  const fileRef = useRef(null);
   const [from, setFrom] = useState('procurement@agency.example.gov');
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
@@ -12,6 +13,11 @@ export default function IntakeDialog({ open, onClose, onSubmit }) {
     if (open && !dlg.open) dlg.showModal();
     if (!open && dlg.open) dlg.close();
   }, [open]);
+
+  const submit = () => {
+    const files = fileRef.current?.files ? Array.from(fileRef.current.files) : [];
+    onSubmit({ from, subject, body, files });
+  };
 
   return (
     <dialog ref={ref} onClose={onClose}>
@@ -31,7 +37,7 @@ export default function IntakeDialog({ open, onClose, onSubmit }) {
           </div>
           <div>
             <label>Attachments (PDF / DOCX / TXT)</label>
-            <input type="file" multiple />
+            <input ref={fileRef} type="file" multiple accept=".pdf,.docx,.txt,application/pdf" />
           </div>
           <div className="full">
             <label>Subject</label>
@@ -53,7 +59,7 @@ export default function IntakeDialog({ open, onClose, onSubmit }) {
           </div>
           <div className="full" style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button className="btn" onClick={onClose}>Cancel</button>
-            <button className="btn primary" onClick={() => onSubmit({ from, subject, body })}>
+            <button className="btn primary" onClick={submit}>
               Run the pipeline →
             </button>
           </div>

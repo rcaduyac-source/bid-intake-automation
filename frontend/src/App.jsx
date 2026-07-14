@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import demoData from './data/demoData.json';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import * as api from './api';
 import { daysTo } from './utils';
 import Header from './components/Header';
 import AttentionBar from './components/AttentionBar';
@@ -11,17 +11,98 @@ import OpportunityDialog from './components/OpportunityDialog';
 import IntakeDialog from './components/IntakeDialog';
 import Flash from './components/Flash';
 
-const clone = (o) => JSON.parse(JSON.stringify(o));
-const nowIso = () => new Date().toISOString().slice(0, 19) + 'Z';
+const emptyState = {
+  emails: [],
+  opportunities: [],
+  reviews: [],
+  exceptions: [],
+  notifications: [],
+  audit: [],
+  ops: {
+    ai_mode: 'mock',
+    ai_model: '',
+    ai_last_error: '',
+    server_started: null,
+    flows_active: true,
+    emails_24h: 0,
+    executions_24h: 0,
+    errors_24h: 0,
+    open_exceptions: 0,
+    open_reviews: 0,
+  },
+  scenarios: {
+    new_bid: 'New solicitation (RFP w/ PDF)',
+    amendment: 'Amendment (existing update)',
+    not_bid: 'Non-bid email (archived)',
+    uncertain: 'Ambiguous (low confidence)',
+  },
+};
 
 export default function App() {
-  const [state, setState] = useState(() => clone(demoData.state));
+  const [state, setState] = useState(emptyState);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('pipeline');
   const [flash, setFlash] = useState({ message: '', nonce: 0 });
   const [oppId, setOppId] = useState(null);
+  const [oppDetail, setOppDetail] = useState(null);
   const [intakeOpen, setIntakeOpen] = useState(false);
 
   const showFlash = (message) => setFlash((f) => ({ message, nonce: f.nonce + 1 }));
+
+  const refresh = useCallback(async () => {
+    const next = await api.fetchState();
+    setState(next);
+    return next;
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const next = await api.fetchState();
+        if (!cancelled) setState(next);
+      } catch (err) {
+        if (!cancelled) showFlash(`API error: ${err.message}`);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Keep UI in sync with Gmail poller / background pipeline without a manual reload
+  useEffect(() => {
+    if (loading) return undefined;
+    const id = window.setInterval(() => {
+      api
+        .fetchState()
+        .then((next) => setState(next))
+        .catch(() => {
+          /* ignore transient poll errors */
+        });
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [loading]);
+
+  useEffect(() => {
+    if (oppId == null) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await api.fetchOpportunity(oppId);
+        if (!cancelled) setOppDetail(data.opportunity);
+      } catch (err) {
+        if (!cancelled) showFlash(`Failed to load opportunity: ${err.message}`);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [oppId, state.opportunities]);
+
+  const dialogOpp = oppId == null ? null : oppDetail;
 
   const counts = {
     reviews: state.reviews.filter((r) => r.status === 'open').length,
@@ -43,75 +124,68 @@ export default function App() {
     ];
   }, [state]);
 
-  const mergedOpp = useMemo(() => {
-    if (oppId == null) return null;
-    const det = demoData.opp_details[String(oppId)] || {};
-    const live = state.opportunities.find((o) => o.id === oppId) || {};
-    return {
-      ...det,
-      ...live,
-      events: det.events || [],
-      chunks: det.chunks || [],
-      analyses: det.analyses || [],
-    };
-  }, [oppId, state.opportunities]);
-
-  // ---------- actions ----------
-  const handleSimulate = () =>
-    showFlash('📧 This is a look-only preview — pipeline wiring comes next.');
-
-  const handleDecide = (taskId, decision, notes) => {
-    setState((prev) => {
-      const next = clone(prev);
-      const r = next.reviews.find((x) => x.id === taskId);
-      if (r && r.status === 'open') {
-        r.status = 'done';
-        r.decision = decision;
-        r.notes = notes || '';
-        r.completed_at = nowIso();
-        const o = next.opportunities.find((op) => op.id === r.opp_id);
-        if (o) o.status = decision === 'GO' ? 'go_approved' : decision === 'NO-GO' ? 'no_go' : 'conditional';
-        next.ops.open_reviews = next.reviews.filter((x) => x.status === 'open').length;
-        next.notifications.unshift({
-          id: Date.now(),
-          type: 'decision',
-          message: `${r.sol_number || ''}: human decision ${decision}`,
-          read: 0,
-          created_at: nowIso(),
-        });
-      }
-      return next;
-    });
-    showFlash('Decision recorded: ' + decision);
+  const handleSimulate = async (scenarioKey) => {
+    try {
+      showFlash('📧 Running sample through the pipeline…');
+      await api.simulate(scenarioKey);
+      await refresh();
+      showFlash('Sample processed');
+    } catch (err) {
+      showFlash(`Simulate failed: ${err.message}`);
+    }
   };
 
-  const handleResolveExc = (id) => {
-    setState((prev) => {
-      const next = clone(prev);
-      const x = next.exceptions.find((e) => e.id === id);
-      if (x) {
-        x.status = 'resolved';
-        next.ops.open_exceptions = next.exceptions.filter((e) => e.status === 'open').length;
-      }
-      return next;
-    });
+  const handleDecide = async (taskId, decision, notes) => {
+    try {
+      await api.decideReview(taskId, decision, notes);
+      await refresh();
+      showFlash('Decision recorded: ' + decision);
+    } catch (err) {
+      showFlash(`Decision failed: ${err.message}`);
+    }
   };
 
-  const handleApprove = (id) => {
-    setState((prev) => {
-      const next = clone(prev);
-      const o = next.opportunities.find((op) => op.id === id);
-      if (o) o.status = 'proposal_phase';
-      return next;
-    });
-    setOppId(null);
-    showFlash('🚀 Approved — moved to Proposal Phase');
+  const handleResolveExc = async (id) => {
+    try {
+      await api.resolveException(id);
+      await refresh();
+    } catch (err) {
+      showFlash(`Resolve failed: ${err.message}`);
+    }
   };
 
-  const handleSubmitIntake = () => {
-    setIntakeOpen(false);
-    showFlash('📧 Email submitted — pipeline running');
+  const handleApprove = async (id) => {
+    try {
+      await api.approveOpportunity(id);
+      setOppId(null);
+      await refresh();
+      showFlash('🚀 Approved — moved to Proposal Phase');
+    } catch (err) {
+      showFlash(`Approve failed: ${err.message}`);
+    }
   };
+
+  const handleSubmitIntake = async ({ from, subject, body, files }) => {
+    try {
+      setIntakeOpen(false);
+      showFlash('📧 Email submitted — pipeline running');
+      await api.submitEmail({ from, subject, body, files });
+      await refresh();
+      showFlash('Pipeline finished');
+    } catch (err) {
+      showFlash(`Intake failed: ${err.message}`);
+    }
+  };
+
+  const handleAsk = (id, question) => api.askOpportunity(id, question);
+
+  if (loading) {
+    return (
+      <main style={{ padding: 40 }}>
+        <p className="muted">Loading bid intake…</p>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -141,10 +215,10 @@ export default function App() {
       </main>
 
       <OpportunityDialog
-        opp={mergedOpp}
-        chunks={demoData.chunks}
+        opp={dialogOpp}
         onClose={() => setOppId(null)}
         onApprove={handleApprove}
+        onAsk={handleAsk}
       />
       <IntakeDialog open={intakeOpen} onClose={() => setIntakeOpen(false)} onSubmit={handleSubmitIntake} />
 

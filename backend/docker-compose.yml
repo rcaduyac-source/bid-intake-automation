@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bid-intake-postgres
+    environment:
+      POSTGRES_USER: bid
+      POSTGRES_PASSWORD: bid
+      POSTGRES_DB: bid_intake
+    ports:
+      - "5432:5432"
+    volumes:
+      - bid_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bid -d bid_intake"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - bid-intake-net
+
+  pgvector:
+    image: pgvector/pgvector:pg16
+    container_name: bid-intake-pgvector
+    environment:
+      POSTGRES_USER: bid
+      POSTGRES_PASSWORD: bid
+      POSTGRES_DB: bid_vectors
+    ports:
+      - "5433:5432"
+    volumes:
+      - bid_vec_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bid -d bid_vectors"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - bid-intake-net
+
+  backend:
+    build: .
+    container_name: bid-intake-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pgvector:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      POSTGRES_URL: postgresql+asyncpg://bid:bid@postgres:5432/bid_intake
+      PGVECTOR_URL: postgresql+asyncpg://bid:bid@pgvector:5432/bid_vectors
+      ATTACHMENT_DIR: /data/attachments
+      CORS_ORIGINS: http://localhost:5173,http://localhost:80,http://frontend
+    ports:
+      - "8000:8000"
+    volumes:
+      - bid_attachments:/data/attachments
+      - ./secrets:/app/secrets
+    networks:
+      - bid-intake-net
+
+volumes:
+  bid_pg_data:
+  bid_vec_data:
+  bid_attachments:
+
+networks:
+  bid-intake-net:
+    name: bid-intake-net

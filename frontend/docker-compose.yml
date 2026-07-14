@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: .
+    container_name: bid-intake-frontend
+    ports:
+      - "5173:80"
+    networks:
+      - bid-intake-net
+
+networks:
+  bid-intake-net:
+    external: true
+    name: bid-intake-net

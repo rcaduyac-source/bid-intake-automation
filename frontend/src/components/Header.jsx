@@ -11,7 +11,7 @@ function Count({ n }) {
 }
 
 export default function Header({ ops, counts, tab, onTab, onOpenIntake }) {
-  const gem = ops.ai_mode === 'gemini';
+  const live = ops.ai_mode === 'openai';
   const healthy = ops.errors_24h === 0;
   const counter = { oppCnt: counts.opps, revCnt: counts.reviews, excCnt: counts.exceptions };
 
@@ -24,9 +24,9 @@ export default function Header({ ops, counts, tab, onTab, onOpenIntake }) {
           <div className="sub">Every bid email captured, analyzed, and put in front of a human.</div>
         </div>
         <div className="spacer" />
-        <span className={'hchip' + (gem ? '' : ' warn')}>
+        <span className={'hchip' + (live ? '' : ' warn')}>
           <span className="dot" />
-          {gem ? `AI: Gemini · ${ops.ai_model}` : 'AI: demo mode (no API key yet)'}
+          {live ? `AI: OpenAI · ${ops.ai_model}` : 'AI: demo mode (no API key yet)'}
         </span>
         <span className={'hchip' + (healthy ? '' : ' warn')}>
           <span className="dot" />
