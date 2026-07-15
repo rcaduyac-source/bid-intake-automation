@@ -82,7 +82,7 @@ export default function App() {
         .catch(() => {
           /* ignore transient poll errors */
         });
-    }, 5000);
+    }, 2500);
     return () => window.clearInterval(id);
   }, [loading]);
 
@@ -170,8 +170,10 @@ export default function App() {
       setIntakeOpen(false);
       showFlash('📧 Email submitted — pipeline running');
       await api.submitEmail({ from, subject, body, files });
+      // The pipeline now runs in the background; reflect the email right away
+      // and let the /api/state polling stream in each stage as it completes.
       await refresh();
-      showFlash('Pipeline finished');
+      showFlash('📧 Received — watch the pipeline process it live');
     } catch (err) {
       showFlash(`Intake failed: ${err.message}`);
     }
