@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import shutil
 import uuid
 import logging
@@ -205,7 +206,11 @@ async def run_pipeline(
                 )
                 continue
             try:
-                full, pg = extract_file(att.storage_path, att.filename)
+                # PDF parsing / OCR is blocking and CPU-heavy; run it off the
+                # event loop so it does not stall concurrent /api/state polls.
+                full, pg = await asyncio.to_thread(
+                    extract_file, att.storage_path, att.filename
+                )
                 pages.extend(pg)
                 if full:
                     texts.append(full)
