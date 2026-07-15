@@ -544,6 +544,34 @@ async def _reload_email(session: AsyncSession, email_id: int) -> Email:
     return result.scalar_one()
 
 
+# Strong refs to in-flight background pipeline tasks so they are not GC'd.
+_background_tasks: set[asyncio.Task] = set()
+
+
+async def _run_pipeline_isolated(email_id: int) -> None:
+    """Run the pipeline in its own DB sessions, for background execution."""
+    from core.db import RelSessionLocal, VecSessionLocal
+
+    try:
+        async with RelSessionLocal() as rel, VecSessionLocal() as vec:
+            await run_pipeline(rel, vec, email_id)
+    except Exception:  # noqa: BLE001
+        # run_pipeline already marks the email as "error"; just avoid an
+        # unhandled task exception.
+        logger.exception("pipeline.background_failed email_id=%s", email_id)
+
+
+def schedule_pipeline(email_id: int) -> None:
+    """Fire-and-forget the pipeline so the HTTP request returns immediately.
+
+    The frontend reflects progress through its /api/state polling as each
+    stage commits.
+    """
+    task = asyncio.create_task(_run_pipeline_isolated(email_id))
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+
+
 SCENARIOS: dict[str, dict[str, Any]] = {
     "new_bid": {
         "from_addr": "procurement@agency.example.gov",
