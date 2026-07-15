@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import get_settings
 from core.db import get_rel_db, get_vec_db
 from core.openai_client import answer_question, embed_texts
-from core.pipeline import create_email_record, run_pipeline, run_scenario
+from core.pipeline import create_email_record, run_scenario, schedule_pipeline
 from core.serializers import email_to_dict
 from core.state import build_state, chunks_for_opp, opportunity_detail
 from model.relational import (
@@ -75,7 +75,6 @@ async def submit_email(
     body: str = Form(""),
     files: Annotated[list[UploadFile] | None, File()] = None,
     rel: AsyncSession = Depends(get_rel_db),
-    vec: AsyncSession = Depends(get_vec_db),
 ):
     file_tuples: list[tuple[str, bytes]] = []
     for f in files or []:
@@ -89,7 +88,10 @@ async def submit_email(
         body=body,
         files=file_tuples,
     )
-    email = await run_pipeline(rel, vec, email.id)
+    # Process in the background so the request returns immediately; the
+    # frontend shows live progress via its /api/state polling instead of
+    # blocking on the whole (slow) AI pipeline.
+    schedule_pipeline(email.id)
     return email_to_dict(email)
 
 

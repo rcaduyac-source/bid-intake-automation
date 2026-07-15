@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import shutil
 import uuid
 import logging
@@ -52,7 +53,11 @@ async def _add_stage(
             created_at=_now(),
         )
     )
-    await session.flush()
+    # Commit each stage as it completes so the polling frontend can render
+    # live pipeline progress (the stage tracker + "Processing" state) instead
+    # of the email sitting frozen at "received" until the whole run finishes.
+    # This also persists partial progress if a later stage fails.
+    await session.commit()
 
 
 async def _audit(
@@ -201,7 +206,11 @@ async def run_pipeline(
                 )
                 continue
             try:
-                full, pg = extract_file(att.storage_path, att.filename)
+                # PDF parsing / OCR is blocking and CPU-heavy; run it off the
+                # event loop so it does not stall concurrent /api/state polls.
+                full, pg = await asyncio.to_thread(
+                    extract_file, att.storage_path, att.filename
+                )
                 pages.extend(pg)
                 if full:
                     texts.append(full)
@@ -533,6 +542,34 @@ async def _reload_email(session: AsyncSession, email_id: int) -> Email:
         .options(selectinload(Email.stages), selectinload(Email.attachments))
     )
     return result.scalar_one()
+
+
+# Strong refs to in-flight background pipeline tasks so they are not GC'd.
+_background_tasks: set[asyncio.Task] = set()
+
+
+async def _run_pipeline_isolated(email_id: int) -> None:
+    """Run the pipeline in its own DB sessions, for background execution."""
+    from core.db import RelSessionLocal, VecSessionLocal
+
+    try:
+        async with RelSessionLocal() as rel, VecSessionLocal() as vec:
+            await run_pipeline(rel, vec, email_id)
+    except Exception:  # noqa: BLE001
+        # run_pipeline already marks the email as "error"; just avoid an
+        # unhandled task exception.
+        logger.exception("pipeline.background_failed email_id=%s", email_id)
+
+
+def schedule_pipeline(email_id: int) -> None:
+    """Fire-and-forget the pipeline so the HTTP request returns immediately.
+
+    The frontend reflects progress through its /api/state polling as each
+    stage commits.
+    """
+    task = asyncio.create_task(_run_pipeline_isolated(email_id))
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
 
 
 SCENARIOS: dict[str, dict[str, Any]] = {
