@@ -52,7 +52,11 @@ async def _add_stage(
             created_at=_now(),
         )
     )
-    await session.flush()
+    # Commit each stage as it completes so the polling frontend can render
+    # live pipeline progress (the stage tracker + "Processing" state) instead
+    # of the email sitting frozen at "received" until the whole run finishes.
+    # This also persists partial progress if a later stage fails.
+    await session.commit()
 
 
 async def _audit(
