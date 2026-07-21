@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { OPP_STATUS, EVT_STYLE } from '../constants';
+import { OPP_STATUS, EVT_STYLE, BID_QUALITY, PROJECT_TYPE } from '../constants';
 import { daysTo, tShort } from '../utils';
 
 function OppBody({ opp, onApprove, onAsk }) {
@@ -10,6 +10,8 @@ function OppBody({ opp, onApprove, onAsk }) {
   const st = OPP_STATUS[opp.status] || { cls: 'gray', text: opp.status };
   const an = opp.analyses && opp.analyses[0] ? opp.analyses[0] : null;
   const d = daysTo(opp.due_date);
+  const bq = opp.bid_quality ? BID_QUALITY[opp.bid_quality] : null;
+  const pt = opp.project_type ? PROJECT_TYPE[opp.project_type] : null;
 
   const ask = async () => {
     const q = question.trim();
@@ -29,6 +31,8 @@ function OppBody({ opp, onApprove, onAsk }) {
     <>
       <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap', alignItems: 'center', marginBottom: 14 }}>
         <span className={`pill ${st.cls}`}>{st.text}</span>
+        {pt && <span className={`pill ${pt.cls}`}>{pt.text}</span>}
+        {bq && <span className={`pill ${bq.cls}`}>{bq.text}</span>}
         {opp.due_date ? (
           <span className={`due ${d <= 7 ? 'urgent' : d <= 14 ? 'soon' : 'ok'}`}>
             ⏰ due {opp.due_date} {opp.due_tz || ''} ({d < 0 ? 'past due' : d + ' days'})

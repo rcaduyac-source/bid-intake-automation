@@ -62,3 +62,30 @@ Restart backend. The poller uses `userId=me` (the authorized account).
 ## OpenAI
 
 Set `OPENAI_API_KEY`. Without it the pipeline runs in heuristic **mock** mode.
+
+## Bid quality (residential screening)
+
+After a bid is routed, `Bid Quality Screening` classifies:
+- `good_bid` — residential (continues full pipeline)
+- `bad_bid` — non-residential (archived early)
+- `uncertain` — continues with an exception for human review
+
+```env
+BID_QUALITY_ENABLED=true
+BID_QUALITY_MIN_CONFIDENCE=0.6
+```
+
+Set `BID_QUALITY_ENABLED=false` to skip screening (all bids treated as good).
+
+## Email link extraction
+
+During **Document Extraction**, URLs in the plain-text body and in stored HTML (`body_html` from Gmail) are discovered, fetched (with SSRF guards), and merged into the same text used for classify/analyze/RAG. Supports HTML pages plus linked PDF/DOCX/TXT.
+
+```env
+LINK_FETCH_ENABLED=true
+LINK_FETCH_MAX_URLS=5
+LINK_FETCH_TIMEOUT_SECONDS=15
+LINK_FETCH_MAX_BYTES=10485760
+```
+
+Set `LINK_FETCH_ENABLED=false` to skip HTTP fetches (body + attachments only).

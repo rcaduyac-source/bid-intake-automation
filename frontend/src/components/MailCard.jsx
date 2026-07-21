@@ -1,4 +1,4 @@
-import { OUTCOMES, STAGES } from '../constants';
+import { OUTCOMES, STAGES, BID_QUALITY } from '../constants';
 import { tShort } from '../utils';
 
 export default function MailCard({ email }) {
@@ -10,6 +10,8 @@ export default function MailCard({ email }) {
       : running
         ? { cls: 'blue', icon: '…', text: 'Processing' }
         : OUTCOMES[e.classification] || { cls: 'gray', icon: '…', text: e.status };
+
+  const bq = e.bid_quality ? BID_QUALITY[e.bid_quality] : null;
 
   const byStage = {};
   e.stages.forEach((s) => {
@@ -41,6 +43,14 @@ export default function MailCard({ email }) {
           {oc.icon} {oc.text}{' '}
           {e.confidence != null && <small>{(e.confidence * 100).toFixed(0)}% confident</small>}
         </span>
+        {bq && (
+          <span className={`outcome ${bq.cls}`} title={e.bid_quality_rationale || ''}>
+            {bq.icon} {bq.text}
+            {e.bid_quality_confidence != null && (
+              <small> {(e.bid_quality_confidence * 100).toFixed(0)}%</small>
+            )}
+          </span>
+        )}
       </div>
 
       <div className="tracker">

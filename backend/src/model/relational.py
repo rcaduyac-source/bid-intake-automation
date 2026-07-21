@@ -22,6 +22,7 @@ class Email(Base):
     from_addr: Mapped[str] = mapped_column(String(512), default="")
     subject: Mapped[str] = mapped_column(String(1024), default="")
     body: Mapped[str] = mapped_column(Text, default="")
+    body_html: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     received_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
     status: Mapped[str] = mapped_column(String(64), default="received")
     classification: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
@@ -32,6 +33,10 @@ class Email(Base):
     )
     error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     extracted_text: Mapped[str] = mapped_column(Text, default="")
+    project_type: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    bid_quality: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    bid_quality_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    bid_quality_rationale: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
 
     stages: Mapped[list["EmailStage"]] = relationship(
@@ -83,6 +88,8 @@ class Opportunity(Base):
     confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     assigned_to: Mapped[str] = mapped_column(String(128), default="RFP Team")
     chunk_count: Mapped[int] = mapped_column(Integer, default=0)
+    project_type: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    bid_quality: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=_now, onupdate=_now)
 

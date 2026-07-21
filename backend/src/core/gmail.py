@@ -70,6 +70,25 @@ def _decode_body(payload: dict[str, Any]) -> str:
     return "\n".join(texts)
 
 
+def _decode_html(payload: dict[str, Any]) -> str:
+    mime = payload.get("mimeType", "")
+    if mime == "text/html" and payload.get("body", {}).get("data"):
+        return base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8", errors="replace")
+    parts = payload.get("parts") or []
+    htmls: list[str] = []
+    for part in parts:
+        part_mime = part.get("mimeType", "")
+        if part_mime == "text/html" and part.get("body", {}).get("data"):
+            htmls.append(
+                base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8", errors="replace")
+            )
+        elif part_mime.startswith("multipart/"):
+            nested = _decode_html(part)
+            if nested:
+                htmls.append(nested)
+    return "\n".join(htmls)
+
+
 def _collect_attachments(service, msg_id: str, payload: dict[str, Any]) -> list[tuple[str, bytes]]:
     files: list[tuple[str, bytes]] = []
 
@@ -139,6 +158,7 @@ async def process_unread_once() -> int:
             received_at = datetime.utcnow()
 
         body = _decode_body(msg.get("payload") or {})
+        body_html = _decode_html(msg.get("payload") or {}) or None
         files = await asyncio.to_thread(_collect_attachments, service, msg["id"], msg.get("payload") or {})
 
         async with RelSessionLocal() as rel, VecSessionLocal() as vec:
@@ -147,6 +167,7 @@ async def process_unread_once() -> int:
                 from_addr=from_addr,
                 subject=subject,
                 body=body,
+                body_html=body_html,
                 message_id=msg.get("id"),
                 received_at=received_at,
                 files=files,

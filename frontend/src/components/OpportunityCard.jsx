@@ -1,10 +1,12 @@
-import { OPP_STATUS } from '../constants';
+import { OPP_STATUS, BID_QUALITY, PROJECT_TYPE } from '../constants';
 import { daysTo } from '../utils';
 
 export default function OpportunityCard({ opp, reviews, onOpen }) {
   const o = opp;
   const st = OPP_STATUS[o.status] || { cls: 'gray', text: o.status, border: 'var(--gray)' };
   const d = daysTo(o.due_date);
+  const bq = o.bid_quality ? BID_QUALITY[o.bid_quality] : null;
+  const pt = o.project_type ? PROJECT_TYPE[o.project_type] : null;
 
   const dueCls = d < 0 ? 'urgent' : d <= 7 ? 'urgent' : d <= 14 ? 'soon' : 'ok';
   const rev = reviews.find((r) => r.opp_id === o.id && r.analysis);
@@ -24,6 +26,8 @@ export default function OpportunityCard({ opp, reviews, onOpen }) {
           <span className="due tbd">⏰ deadline TBD</span>
         )}
         <span className={`pill ${st.cls}`}>{st.text}</span>
+        {pt && <span className={`pill ${pt.cls}`}>{pt.text}</span>}
+        {bq && <span className={`pill ${bq.cls}`}>{bq.text}</span>}
         {rec && (
           <span className={`pill ${rec === 'GO' ? 'green' : rec === 'NO-GO' ? 'red' : 'amber'}`}>
             AI: {rec}

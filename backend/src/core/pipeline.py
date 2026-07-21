@@ -14,7 +14,8 @@ from sqlalchemy.orm import selectinload
 
 from config import get_settings
 from core.extract import chunk_pages, extract_file, is_allowed
-from core.openai_client import analyze_bid, classify_content, embed_texts
+from core.link_extract import extract_links_from_email
+from core.openai_client import analyze_bid, classify_content, embed_texts, screen_bid_quality
 from model.relational import (
     Analysis,
     Attachment,
@@ -86,6 +87,7 @@ async def create_email_record(
     from_addr: str,
     subject: str,
     body: str,
+    body_html: str | None = None,
     message_id: str | None = None,
     received_at: datetime | None = None,
     files: list[tuple[str, bytes]] | None = None,
@@ -98,6 +100,7 @@ async def create_email_record(
         from_addr=from_addr,
         subject=subject,
         body=body,
+        body_html=body_html,
         received_at=received_at or _now(),
         status="received",
         created_at=_now(),
@@ -229,13 +232,46 @@ async def run_pipeline(
                     "pipeline.extract_failed email_id=%s file=%s", email.id, att.filename
                 )
 
+        link_count = 0
+        fetched_urls, link_pages, _link_chars = await extract_links_from_email(
+            body=email.body,
+            body_html=email.body_html,
+            email_id=email.id,
+            settings=settings,
+        )
+        if link_pages:
+            pages.extend(link_pages)
+            for pg in link_pages:
+                if pg.get("text"):
+                    texts.append(pg["text"])
+            link_count = len(fetched_urls)
+            for url in fetched_urls:
+                url_pages = [p for p in link_pages if p.get("url") == url]
+                url_chars = sum(len(p.get("text") or "") for p in url_pages)
+                content_type = (url_pages[0].get("content_type") if url_pages else "") or "unknown"
+                logger.info(
+                    "pipeline.link_extract email_id=%s url=%s chars=%s content_type=%s",
+                    email.id,
+                    url,
+                    url_chars,
+                    content_type,
+                )
+
         combined = "\n\n".join(texts)
         email.extracted_text = combined
-        extract_detail = (
-            f"Extracted text from {len(stored)} attachment(s) + email body ({len(combined)} chars)"
-            if combined
-            else "No document text to read"
-        )
+        extract_parts: list[str] = []
+        if stored:
+            extract_parts.append(f"{len(stored)} attachment(s)")
+        if email.body.strip():
+            extract_parts.append("email body")
+        if link_count:
+            extract_parts.append(f"{link_count} link(s)")
+        if extract_parts:
+            extract_detail = (
+                f"Extracted {' + '.join(extract_parts)} ({len(combined)} chars)"
+            )
+        else:
+            extract_detail = "No document text to read"
         await _add_stage(rel, email.id, "Document Extraction", extract_detail)
         logger.info(
             "pipeline.stage email_id=%s stage=%s chars=%s preview=%r",
@@ -359,6 +395,90 @@ async def run_pipeline(
             await rel.commit()
             return await _reload_email(rel, email.id)
 
+        # 5b. Bid Quality Screening (residential = good_bid)
+        project_type: str | None = None
+        bid_quality: str | None = None
+        bq_conf: float | None = None
+        bq_rationale: str = ""
+
+        if settings.bid_quality_enabled:
+            quality = await screen_bid_quality(
+                subject=email.subject,
+                body=email.body,
+                document_text=classify_text,
+                attachment_names=[a.filename for a in stored],
+                settings=settings,
+            )
+            project_type = quality.get("project_type")
+            bid_quality = quality.get("bid_quality") or "uncertain"
+            bq_conf = float(quality.get("confidence") or 0.5)
+            bq_rationale = quality.get("rationale") or ""
+
+            email.project_type = project_type
+            email.bid_quality = bid_quality
+            email.bid_quality_confidence = bq_conf
+            email.bid_quality_rationale = bq_rationale
+
+            type_label = (project_type or "unknown").replace("_", " ")
+            bq_detail = (
+                f"{type_label.title()} — {bid_quality.replace('_', ' ')} "
+                f"({int(bq_conf * 100)}% confident)"
+            )
+            if bq_rationale:
+                bq_detail += f". Rationale: {bq_rationale}"
+            await _add_stage(rel, email.id, "Bid Quality Screening", bq_detail)
+            logger.info(
+                "pipeline.bid_quality email_id=%s project_type=%s bid_quality=%s "
+                "confidence=%.2f rationale=%r",
+                email.id,
+                project_type,
+                bid_quality,
+                bq_conf,
+                bq_rationale,
+            )
+
+            if bid_quality == "bad_bid" and bq_conf >= settings.bid_quality_min_confidence:
+                email.status = "archived"
+                await _audit(
+                    rel,
+                    "archived_bad_bid",
+                    f"email:{email.id}",
+                    f"{project_type}: {bq_rationale}",
+                    actor="WF5b",
+                )
+                logger.warning(
+                    "pipeline.stop_bad_bid email_id=%s subject=%r project_type=%r rationale=%r",
+                    email.id,
+                    email.subject,
+                    project_type,
+                    bq_rationale,
+                )
+                await rel.commit()
+                return await _reload_email(rel, email.id)
+
+            if bid_quality == "uncertain" or bq_conf < settings.bid_quality_min_confidence:
+                needs_attention.append(
+                    "Could not confirm residential project — needs review"
+                    if bid_quality == "uncertain"
+                    else "Low bid quality confidence"
+                )
+                rel.add(
+                    ExceptionRecord(
+                        email_id=email.id,
+                        reason=bq_rationale or "Could not confirm residential — needs review",
+                        status="open",
+                        created_at=_now(),
+                    )
+                )
+                await _notify(
+                    rel,
+                    "exception",
+                    f"Bid quality unclear: {email.subject[:100]}",
+                )
+        else:
+            bid_quality = "good_bid"
+            project_type = "residential"
+
         # 6. Bid recorded
         opp: Opportunity | None = None
         if cls == "existing_update" and sol:
@@ -373,6 +493,8 @@ async def run_pipeline(
             opp.summary = classification.get("summary") or opp.summary
             opp.confidence = conf
             opp.status = "updated"
+            opp.project_type = project_type
+            opp.bid_quality = bid_quality
             opp.updated_at = _now()
             rel.add(
                 OpportunityEvent(
@@ -396,6 +518,8 @@ async def run_pipeline(
                 summary=classification.get("summary") or "",
                 confidence=conf,
                 assigned_to="RFP Team",
+                project_type=project_type,
+                bid_quality=bid_quality,
                 created_at=_now(),
                 updated_at=_now(),
             )

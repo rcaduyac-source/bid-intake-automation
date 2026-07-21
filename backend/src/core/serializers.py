@@ -32,6 +32,7 @@ def email_to_dict(email: Email) -> dict[str, Any]:
         "from_addr": email.from_addr,
         "subject": email.subject,
         "body": email.body,
+        "body_html": email.body_html,
         "received_at": iso(email.received_at),
         "status": email.status,
         "classification": email.classification,
@@ -39,6 +40,10 @@ def email_to_dict(email: Email) -> dict[str, Any]:
         "sol_number": email.sol_number,
         "opportunity_id": email.opportunity_id,
         "error": email.error,
+        "project_type": email.project_type,
+        "bid_quality": email.bid_quality,
+        "bid_quality_confidence": email.bid_quality_confidence,
+        "bid_quality_rationale": email.bid_quality_rationale,
         "created_at": iso(email.created_at),
         "stages": [
             {
@@ -79,6 +84,8 @@ def opportunity_to_dict(opp: Opportunity) -> dict[str, Any]:
         "created_at": iso(opp.created_at),
         "updated_at": iso(opp.updated_at),
         "chunk_count": opp.chunk_count,
+        "project_type": opp.project_type,
+        "bid_quality": opp.bid_quality,
     }
 
 

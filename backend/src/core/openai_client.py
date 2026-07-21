@@ -54,6 +54,26 @@ Return JSON with keys:
 - rationale: short string
 """
 
+BID_QUALITY_SCHEMA_HINT = """
+Return JSON with keys:
+- project_type: one of residential, commercial, mixed, institutional, other
+- bid_quality: one of good_bid, bad_bid, uncertain
+- confidence: number 0-1
+- rationale: short reason
+
+Byrdson only pursues RESIDENTIAL work. Rules:
+- good_bid: residential projects — single-family homes, multi-family housing, condos/townhomes,
+  homeowner roofing/HVAC/plumbing quotes, home repair/reconstruction (e.g. CDBG home programs),
+  residential roofing proposals sent for Byrdson to price or perform
+- bad_bid: non-residential — commercial office/retail, municipal/public works RFPs, schools,
+  hospitals, highways, industrial, institutional, general commercial GC work
+- mixed: if primarily housing units → good_bid; if primarily commercial/public → bad_bid
+- uncertain: cannot tell from available text — use when confidence is low
+
+Prefer uncertain over bad_bid when evidence is thin. A homeowner roofing quote PDF is good_bid.
+A municipal department RFP for public infrastructure is bad_bid.
+"""
+
 
 def _client(settings: Settings | None = None) -> AsyncOpenAI | None:
     settings = settings or get_settings()
@@ -110,6 +130,44 @@ def _heuristic_analyze(text: str) -> dict[str, Any]:
         "scope": "See email and attachments.",
         "recommendation": "CONDITIONAL",
         "rationale": "Mock analysis — set OPENAI_API_KEY for live AI.",
+    }
+
+
+def _heuristic_bid_quality(subject: str, body: str, text: str) -> dict[str, Any]:
+    blob = f"{subject}\n{body}\n{text}".lower()
+    residential_kw = (
+        "residential", "homeowner", "single-family", "single family", "multi-family",
+        "multifamily", "housing", "home repair", "roofing quote", "condo", "townhome",
+        "dwelling", "house", "cdbg", "home reconstruction",
+    )
+    commercial_kw = (
+        "municipal", "department of", "public works", "highway", "school district",
+        "hospital", "commercial building", "office building", "retail", "industrial",
+        "rfp no", "solicitation no", "ifb", "state of", "county of", "city of",
+        "infrastructure", "prdo", "agency",
+    )
+    res_hits = sum(1 for k in residential_kw if k in blob)
+    com_hits = sum(1 for k in commercial_kw if k in blob)
+
+    if res_hits > com_hits and res_hits >= 1:
+        return {
+            "project_type": "residential",
+            "bid_quality": "good_bid",
+            "confidence": min(0.55 + res_hits * 0.08, 0.85),
+            "rationale": "Heuristic: residential keywords detected.",
+        }
+    if com_hits > res_hits and com_hits >= 1:
+        return {
+            "project_type": "commercial",
+            "bid_quality": "bad_bid",
+            "confidence": min(0.55 + com_hits * 0.08, 0.85),
+            "rationale": "Heuristic: commercial/municipal keywords detected.",
+        }
+    return {
+        "project_type": "other",
+        "bid_quality": "uncertain",
+        "confidence": 0.5,
+        "rationale": "Heuristic: could not determine residential vs commercial.",
     }
 
 
@@ -174,6 +232,65 @@ async def classify_content(
     except json.JSONDecodeError:
         logger.exception("classify.openai_json_error subject=%r raw=%r", subject, raw[:500])
         result = _heuristic_classify(subject, body, f"{att_line}\n{prompt_text}")
+        result["rationale"] = f"JSON parse failed; fallback heuristic. Raw: {raw[:200]}"
+    return result
+
+
+async def screen_bid_quality(
+    *,
+    subject: str,
+    body: str,
+    document_text: str,
+    attachment_names: list[str] | None = None,
+    settings: Settings | None = None,
+) -> dict[str, Any]:
+    settings = settings or get_settings()
+    client = _client(settings)
+    prompt_text = document_text[:24000]
+    att_line = ", ".join(attachment_names or []) or "(none)"
+
+    if not client:
+        result = _heuristic_bid_quality(subject, body, f"{att_line}\n{prompt_text}")
+        logger.info("bid_quality.heuristic subject=%r result=%s", subject, result)
+        return result
+
+    logger.info(
+        "bid_quality.openai_request model=%s subject=%r doc_chars=%s attachments=%s",
+        settings.openai_chat_model,
+        subject,
+        len(prompt_text or ""),
+        attachment_names or [],
+    )
+    resp = await client.chat.completions.create(
+        model=settings.openai_chat_model,
+        response_format={"type": "json_object"},
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You screen bid opportunities for Byrdson Services, a residential-focused contractor. "
+                    + BID_QUALITY_SCHEMA_HINT
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"Subject: {subject}\n"
+                    f"Attachment filenames: {att_line}\n\n"
+                    f"Body:\n{body}\n\n"
+                    f"Documents:\n{prompt_text}"
+                ),
+            },
+        ],
+        temperature=0.1,
+    )
+    raw = resp.choices[0].message.content or "{}"
+    logger.info("bid_quality.openai_raw subject=%r raw=%s", subject, raw[:2000])
+    try:
+        result = json.loads(raw)
+    except json.JSONDecodeError:
+        logger.exception("bid_quality.openai_json_error subject=%r raw=%r", subject, raw[:500])
+        result = _heuristic_bid_quality(subject, body, f"{att_line}\n{prompt_text}")
         result["rationale"] = f"JSON parse failed; fallback heuristic. Raw: {raw[:200]}"
     return result
 

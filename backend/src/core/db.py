@@ -29,6 +29,17 @@ async def get_vec_db() -> AsyncGenerator[AsyncSession, None]:
 async def init_databases() -> None:
     async with rel_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Add columns on existing volumes (create_all does not alter tables)
+        for stmt in (
+            "ALTER TABLE emails ADD COLUMN IF NOT EXISTS project_type VARCHAR(64)",
+            "ALTER TABLE emails ADD COLUMN IF NOT EXISTS bid_quality VARCHAR(64)",
+            "ALTER TABLE emails ADD COLUMN IF NOT EXISTS bid_quality_confidence DOUBLE PRECISION",
+            "ALTER TABLE emails ADD COLUMN IF NOT EXISTS bid_quality_rationale TEXT",
+            "ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS project_type VARCHAR(64)",
+            "ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS bid_quality VARCHAR(64)",
+            "ALTER TABLE emails ADD COLUMN IF NOT EXISTS body_html TEXT",
+        ):
+            await conn.execute(text(stmt))
 
     async with vec_engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))

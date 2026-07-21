@@ -7,6 +7,20 @@ export const OUTCOMES = {
   uncertain: { cls: 'red', icon: '?', text: 'Needs human triage' },
 };
 
+export const BID_QUALITY = {
+  good_bid: { cls: 'green', icon: '🏠', text: 'Good bid · residential' },
+  bad_bid: { cls: 'red', icon: '✕', text: 'Bad bid · non-residential' },
+  uncertain: { cls: 'amber', icon: '?', text: 'Project type unclear' },
+};
+
+export const PROJECT_TYPE = {
+  residential: { cls: 'green', text: 'Residential' },
+  commercial: { cls: 'blue', text: 'Commercial' },
+  mixed: { cls: 'amber', text: 'Mixed-use' },
+  institutional: { cls: 'blue', text: 'Institutional' },
+  other: { cls: 'gray', text: 'Other' },
+};
+
 export const OPP_STATUS = {
   new: { cls: 'indigo', text: 'New', border: 'var(--indigo)' },
   updated: { cls: 'blue', text: 'Updated', border: 'var(--blue)' },
@@ -23,6 +37,7 @@ export const STAGES = [
   { match: ['Document Extraction'], lbl: 'Extract', c: '#2467d6' },
   { match: ['AI Classification'], lbl: 'AI read', c: '#0e8f7e' },
   { match: ['Validation & Decision'], lbl: 'Route', c: '#d9930d' },
+  { match: ['Bid Quality Screening'], lbl: 'Quality', c: '#0e8f7e' },
   { match: ['Create Opportunity', 'Update Opportunity'], lbl: 'Record', c: '#2e9e4f' },
   { match: ['Document Indexing'], lbl: 'Index', c: '#2467d6' },
   { match: ['AI Bid Analysis'], lbl: 'Analyze', c: '#0e8f7e' },
@@ -51,6 +66,7 @@ export const HOWTO_STEPS = [
   { icon: '📄', bg: 'var(--blue-bg)', label: 'Text extracted' },
   { icon: '🧠', bg: 'var(--teal-bg)', label: 'AI reads it' },
   { icon: '🔀', bg: 'var(--amber-bg)', label: 'Routed' },
+  { icon: '🏠', bg: 'var(--teal-bg)', label: 'Quality check' },
   { icon: '🗂️', bg: 'var(--green-bg)', label: 'Bid recorded' },
   { icon: '📊', bg: 'var(--teal-bg)', label: 'AI analyzes' },
   { icon: '👤', bg: 'var(--red-bg)', label: 'You decide' },

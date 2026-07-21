@@ -23,6 +23,14 @@ class Settings(BaseSettings):
     gmail_poll_seconds: int = 60
     gmail_enabled: bool = False
 
+    bid_quality_enabled: bool = True
+    bid_quality_min_confidence: float = 0.6
+
+    link_fetch_enabled: bool = True
+    link_fetch_max_urls: int = 5
+    link_fetch_timeout_seconds: int = 15
+    link_fetch_max_bytes: int = 10_485_760
+
     openai_api_key: str = ""
     openai_chat_model: str = "gpt-4o-mini"
     openai_embed_model: str = "text-embedding-3-small"
