@@ -1,0 +1,8 @@
+# Vendored/installed agent skills — restorable from skills-lock.json
+# (`bunx skills experimental_install`). Keep the lockfile tracked, ignore the copies.
+.claude/skills/framer-motion-animator/
+.claude/skills/migrate-radix-to-base/
+.claude/skills/shadcn/
+
+# MCP server config (local)
+.mcp.json
